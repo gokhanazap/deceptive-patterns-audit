@@ -21,7 +21,47 @@ Bu bir ön taramadır. Kullanıcı testinin ve hukuk görüşünün yerini tutma
 git clone https://github.com/gokhanazap/deceptive-patterns-audit.git ~/.claude/skills/deceptive-patterns-audit
 ```
 
-Sonra Claude Code'a şunu yazman yeterli: `örnek.com sitesini dark pattern açısından tara`.
+## Kullanım
+
+Claude Code'a düz cümleyle yazman yeterli:
+
+- `örnek.com sitesini dark pattern açısından tara`
+- `bu sitede abonelik iptali zor mu, bakar mısın`
+- `bu popup metni kullanıcıyı kandırıyor mu: "..."`
+- `bu A/B varyantını canlıya almadan önce etik açıdan kontrol et` (ekran görüntüsü ya da metin ekle)
+
+Canlı site için Claude'un tarayıcı aracı gerekir. Mobil uygulama gezemez; onun için ekran görüntüsü ya da ekran kaydı ver.
+
+## Çıktı
+
+Sade Türkçe bir rapor:
+
+| Bölüm | İçerik |
+|---|---|
+| Özet | En önemli sorun ve genel tablo |
+| Kapsam | Hangi akış görüldü, hangisi görülemedi |
+| Bulgular | Kalıp, sınıf, ciddiyet, güven, birebir kanıt, kullanıcı beklentisi, öneri |
+| Doğrulanacaklar | Dışarıdan bilinemeyen iddialar ve bakılacak veri |
+| Hatalar | Deceptive pattern olmayan kullanılabilirlik sorunları |
+| Temiz bulunanlar | Bakılan ve sorun görülmeyen alanlar |
+| Neyi göremez | Taramanın sınırları |
+
+## Dosyalar
+
+```text
+SKILL.md                        Skill'in akışı ve kuralları
+references/kontrol-listesi.md   Kalıp kataloğu, yürüyüş soruları, karar testleri
+references/urunler/             Ürüne özel akış listeleri (yereldir, repo'ya gitmez)
+scripts/sayfa-tarama.js         Tarayıcıda çalışan ölçüm betiği, sayfayı değiştirmez
+evals/                          Kör test sayfası ve cevap anahtarı
+```
+
+## Sınırlar
+
+- Giriş arkasını ve mobil uygulamaları göremez. Kapsam tablosunda bunlar açıkça belirtilir.
+- Tek seferlik tarama, günler içinde tekrar eden popup'ları ölçemez. Daha önce kapatılmış popup'lar da görünmeyebilir.
+- Betik görsele gömülü yazıları ve özel bileşenle yapılmış düğmeleri okuyamaz. Bunlara ekran görüntüsünden bakılır.
+- Ajan denetimleri çok adımlı kalıplarda daha çok hata yapıyor. Sınırdaki maddelere insan karar vermeli.
 
 Ürüne özel akış listesi eklemek için `references/urunler/<ürün>.md` oluştur. Tarama raporlarını açık repo'lara koyma.
 
