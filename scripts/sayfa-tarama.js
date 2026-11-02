@@ -1,6 +1,15 @@
 // Tarayıcıda çalışır, sayfayı değiştirmez. Sonuçlar bulgu değil adaydır; yargı SKILL.md'de.
 (() => {
   const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
+  // JavaScript'te /i bayrağı "İ" ile "i"yi eşlemez; Türkçe küçültülmüş hâli de denenir.
+  const hit = (re, s) => re.test(s) || re.test((s || '').toLocaleLowerCase('tr'));
+  // Çerez bantları çoğu zaman shadow DOM içindedir, normal sorgular onları görmez.
+  const roots = [document];
+  for (let i = 0; i < roots.length; i++) {
+    roots[i].querySelectorAll('*').forEach((e) => { if (e.shadowRoot) roots.push(e.shadowRoot); });
+  }
+  const all = (sel) => roots.flatMap((r) => [...r.querySelectorAll(sel)]);
+  const up = (e) => e.parentElement || (e.getRootNode().host || null);
   const cut = (s, n = 160) => { s = clean(s); return s.length > n ? s.slice(0, n) + '…' : s; };
   const visible = (el) => {
     const r = el.getBoundingClientRect();
@@ -17,7 +26,7 @@
     return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
   };
   const bgOf = (el) => {
-    for (let e = el; e; e = e.parentElement) {
+    for (let e = el; e; e = up(e)) {
       const c = parseColor(getComputedStyle(e).backgroundColor);
       if (c && c.a > 0.5) return c;
     }
@@ -31,7 +40,7 @@
   };
   const where = (el) => {
     const parts = [];
-    for (let e = el; e && e !== document.body && parts.length < 3; e = e.parentElement) {
+    for (let e = el; e && e !== document.body && parts.length < 3; e = up(e)) {
       parts.unshift(e.tagName.toLowerCase() + (e.id ? '#' + e.id : ''));
     }
     return parts.join(' > ');
@@ -43,14 +52,14 @@
   };
 
   // Önceden seçili kutular. Görünmeyen özel kutular da sayılır, çünkü çoğu tasarım sistemi gerçek input'u gizler.
-  const preselected = [...document.querySelectorAll('input[type=checkbox],input[type=radio],[role=checkbox][aria-checked=true],[role=switch][aria-checked=true]')]
+  const preselected = all('input[type=checkbox],input[type=radio],[role=checkbox][aria-checked=true],[role=switch][aria-checked=true]')
     .filter((i) => i.checked || i.getAttribute('aria-checked') === 'true')
     .map((i) => ({ type: i.type || i.getAttribute('role'), label: cut(labelOf(i)), required: !!i.required, where: where(i) }));
 
   // Kabul ve ret ifadeleri yan yanaysa görsel farkını ölç.
   const ACCEPT = /kabul|onayl|izin ver|tümüne izin|accept|allow|agree|hemen başla|devam et|kodu al|indir|abone ol|satın al/i;
   const DECLINE = /reddet|hayır|şimdi değil|daha sonra|vazgeç|iptal|tercih|ayarlar|yönet|kapat|istemiyorum|decline|reject|no thanks|not now|later|manage/i;
-  const clickable = [...document.querySelectorAll('button,a,[role=button],input[type=button],input[type=submit]')].filter(visible);
+  const clickable = all('button,a,[role=button],input[type=button],input[type=submit]').filter(visible);
   const metrics = (el) => {
     const r = el.getBoundingClientRect();
     const c = getComputedStyle(el);
@@ -61,10 +70,10 @@
   const seen = new Set();
   clickable.forEach((el) => {
     const t = clean(el.innerText || el.value);
-    if (!t || t.length > 60 || !DECLINE.test(t) || ACCEPT.test(t)) return;
+    if (!t || t.length > 60 || !hit(DECLINE, t) || hit(ACCEPT, t)) return;
     let box = el.parentElement;
-    for (let depth = 0; box && depth < 4; depth++, box = box.parentElement) {
-      const acc = [...box.querySelectorAll('button,a,[role=button]')].filter((x) => x !== el && visible(x) && ACCEPT.test(clean(x.innerText)) && clean(x.innerText).length <= 60);
+    for (let depth = 0; box && depth < 4; depth++, box = up(box)) {
+      const acc = [...box.querySelectorAll('button,a,[role=button]')].filter((x) => x !== el && visible(x) && hit(ACCEPT, clean(x.innerText)) && clean(x.innerText).length <= 60);
       if (acc.length) {
         const key = t + '|' + clean(acc[0].innerText);
         if (!seen.has(key)) {
@@ -78,9 +87,9 @@
   });
 
   // Küçük ya da soluk koşul metinleri ve aday ifadeler, metin düğümü düzeyinde.
-  const TERMS = /taahhüt|otomatik|yenilen|cayma|iptal|ücret|bedel|tahsil|faturan|sözleşme|kampanya|\d+\.?\s*ay(dan| sonra)|sonra(sında)?\s+\d|geçerli|hizmet bedeli|komisyon|auto-?renew|commitment|cancel/i;
+  const TERMS = /taahhüt|otomatik|yenilen|cayma|iptal|ücret(?!siz)|bedel|tahsil|faturan|sözleşme|kampanya|\d+\.?\s*ay(dan| sonra)|sonra(sında)?\s+\d|geçerli|hizmet bedeli|komisyon|auto-?renew|commitment|cancel/i;
   const PHRASES = [
-    ['aciliyet', /son \d+ (saat|gün|dakika)|bugün bitiyor|acele et|kaçırma|sınırlı süre|süre doluyor|hurry|ends (today|soon)|limited time/i],
+    ['aciliyet', /son \d+ (saat|gün|dakika)|bugün bitiyor|acele et|fırsat\w* kaçırma|sınırlı süre|süre doluyor|hurry|ends (today|soon)|limited time/i],
     ['kıtlık', /son \d+ (adet|paket|oda|koltuk|kişi)|kalan (\d+|adet|oda|koltuk|stok|paket|kontenjan)|tükeniyor|stokta|\bonly \d+ left/i],
     ['sosyal kanıt', /şu an \d|\d+[.,]?\d* kişi (izliyor|aldı|baktı|inceliyor|seçti|tercih)|en çok (tercih|satan)|en popüler|people (are )?(watching|viewing)|most popular/i],
     ['utandırma', /hayır,? .{3,60}(seviyorum|istemiyorum|sevmiyorum|umurumda)|no thanks,? i/i],
@@ -88,47 +97,50 @@
     ['ücretsiz vaadi', /ücretsiz|bedava|free trial|\bfree\b/i]
   ];
   const finePrint = [], phrases = [];
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   const seenText = new Set();
-  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-    const el = n.parentElement;
-    const t = clean(n.nodeValue);
-    if (!t || t.length < 3 || !el || /^(SCRIPT|STYLE|NOSCRIPT)$/.test(el.tagName) || seenText.has(t)) continue;
-    seenText.add(t);
-    const inClosed = !!el.closest('details:not([open])');
-    if (!visible(el) && !inClosed) continue;
-    const c = getComputedStyle(el);
-    const px = parseFloat(c.fontSize), con = contrast(el);
-    if (TERMS.test(t) && (px <= 12 || (con !== null && con < 3) || inClosed)) {
-      finePrint.push({ text: cut(t, 220), fontPx: px, contrast: con, closed: inClosed, where: where(el) });
+  roots.forEach((root) => {
+    const walker = document.createTreeWalker(root === document ? document.body : root, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const el = n.parentElement;
+      const t = clean(n.nodeValue);
+      if (!t || t.length < 3 || !el || /^(SCRIPT|STYLE|NOSCRIPT)$/.test(el.tagName) || seenText.has(t)) continue;
+      seenText.add(t);
+      const inClosed = !!el.closest('details:not([open])');
+      if (!visible(el) && !inClosed) continue;
+      const c = getComputedStyle(el);
+      const px = parseFloat(c.fontSize), con = contrast(el);
+      if (hit(TERMS, t) && (px <= 12 || (con !== null && con < 3) || inClosed)) {
+        finePrint.push({ text: cut(t, 220), fontPx: px, contrast: con, closed: inClosed, where: where(el) });
+      }
+      PHRASES.forEach(([kind, re]) => { if (hit(re, t)) phrases.push({ kind, text: cut(t), where: where(el) }); });
     }
-    PHRASES.forEach(([kind, re]) => { if (re.test(t)) phrases.push({ kind, text: cut(t), where: where(el) }); });
-  }
+  });
 
   // Değişen sayaç adayları: mm:ss biçimi.
-  const timers = [...document.querySelectorAll('body *')]
+  const timers = all('*')
     .filter((e) => e.children.length === 0 && /^\s*\d{1,2}:\d{2}(:\d{2})?\s*$/.test(e.textContent || '') && visible(e))
     .slice(0, 10).map((e) => ({ text: clean(e.textContent), context: cut(e.parentElement && e.parentElement.innerText, 100), where: where(e) }));
 
   // Açılması gereken alanlar.
   const closed = [
-    ...[...document.querySelectorAll('details:not([open]) > summary')].map((e) => cut(e.innerText, 60)),
-    ...[...document.querySelectorAll('[aria-expanded=false]')].filter(visible).map((e) => cut(e.innerText || e.getAttribute('aria-label'), 60)),
+    ...all('details:not([open]) > summary').map((e) => cut(e.innerText, 60)),
+    ...all('[aria-expanded=false]').filter(visible).map((e) => cut(e.innerText || e.getAttribute('aria-label'), 60)),
     ...clickable.filter((e) => /^(detaylar?|detaylı bilgi|devamını oku|daha fazla|tümünü gör|koşullar|details|read more|show more)$/i.test(clean(e.innerText))).map((e) => cut(e.innerText, 60))
   ].filter(Boolean);
-  const tabs = [...document.querySelectorAll('[role=tab],[role=radio],label,button')]
+  const tabs = all('[role=tab],[role=radio],label,button')
     .filter((e) => visible(e) && /^\d+\s*(ay|yıl|hafta|month|year)s?$|^(aylık|yıllık|monthly|yearly)\*?$/i.test(clean(e.innerText)))
     .map((e) => clean(e.innerText));
 
   // Görünen pencere ve bantlar.
-  const overlays = [...document.querySelectorAll('body *')].filter((e) => {
+  const overlays = all('*').filter((e) => {
+    if (/^(NAV|ASIDE|HEADER)$/.test(e.tagName) || e.closest('nav,aside,header')) return false;
     const c = getComputedStyle(e);
     if (!(c.position === 'fixed' || e.getAttribute('role') === 'dialog' || e.tagName === 'DIALOG')) return false;
     if (!visible(e)) return false;
     const r = e.getBoundingClientRect();
-    return r.width * r.height > 20000 && clean(e.innerText).length > 10;
+    return r.width * r.height > 20000 && clean(e.innerText || e.textContent).length > 10;
   }).slice(0, 6).map((e) => ({
-    text: cut(e.innerText, 200),
+    text: cut(e.innerText || e.textContent, 200),
     buttons: [...e.querySelectorAll('button,a,[role=button]')].filter(visible).slice(0, 6).map(metrics),
     where: where(e)
   }));
@@ -138,5 +150,5 @@
     .filter((a) => /iptal|cayma|sözleşme|koşul|şart|gizlilik|aydınlatma|çerez|cookie|sss|sıkça|yardım|destek|help|faq|terms|privacy|cancel|\.pdf/i.test(clean(a.innerText) + ' ' + a.getAttribute('href')))
     .slice(0, 25).map((a) => ({ text: cut(a.innerText, 60), href: a.href }));
 
-  return { url: location.href, title: document.title, preselected, choicePairs, finePrint: finePrint.slice(0, 30), phrases: phrases.slice(0, 30), timers, closed: [...new Set(closed)].slice(0, 30), tabs: [...new Set(tabs)], overlays, exitLinks };
+  return { url: location.href, title: document.title, shadowRoots: roots.length - 1, preselected, choicePairs, finePrint: finePrint.slice(0, 30), phrases: phrases.slice(0, 30), timers, closed: [...new Set(closed)].slice(0, 30), tabs: [...new Set(tabs)], overlays, exitLinks };
 })();

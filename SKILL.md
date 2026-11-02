@@ -36,10 +36,13 @@ Girdi neyi görebileceğini belirler:
 
 Her sayfa için:
 
+0. Sayfa açılınca 3-5 saniye bekle ve ekran görüntüsü al. Çerez bandı ve popup'lar geç gelir. Boş dönen sayfayı "içerik yok" sayma, bekleyip yeniden oku. Bir sekmeye ya da düğmeye basmadan önce varsayılan hâli kaydet; yoksa neyin varsayılan geldiğini kaybedersin.
 1. `scripts/sayfa-tarama.js` dosyasını oku ve içeriğini tarayıcının JavaScript aracıyla çalıştır. Önceden işaretli kutuları, kabul/ret düğmelerinin boyut ve kontrast farkını, küçük puntolu koşul metinlerini, aciliyet ifadelerini, kapalı alanları ve iptal/sözleşme linklerini verir. Bunlar yalnızca adaydır: betik "kalan" sözcüğünü bulur, kıtlığın sahte olup olmadığını bilmez.
 2. Kapalı olan her şeyi aç. "Detaylar", akordeon, 1 Ay/12 Ay sekmesi, SSS. Koşullar genellikle buradadır ve kapalı kalırsa görülemez. Betiği açtıktan sonra yeniden çalıştır.
 3. Metni `get_page_text` ile al. Görsel düzen önemliyse ekran görüntüsü ekle.
-4. Sözleşme, SSS ve yardım sayfalarını ayrıca oku. PDF ise indirmeden önce kullanıcıya sor.
+4. Sözleşme, SSS ve yardım sayfalarını ayrıca oku. Kapalı cevaplar görünen metinde çıkmaz; `document.body.textContent` içinde çoğu zaman vardır. PDF ise indirmeden önce kullanıcıya sor.
+
+Betik ve metin okuma ekrandaki her şeyi yakalamaz. Ekran görüntüsünde görülen bir şey betikte yoksa ekran görüntüsüne güven. Tarayıcı profili kalıcıdır: bir popup daha önce kapatıldıysa görünmeyebilir, görmediğin popup "yok" demek değildir.
 
 Gördüklerini tek bir defterde biriktir, özetleyip geçme:
 
@@ -82,7 +85,7 @@ Kasıt yazma. Dışarıdan bilinemez ve gerekmez de: etki aynıdır. "Bilerek ya
 - **Doğrulandı:** ekranda ya da kodda görüldü, kanıt elde.
 - **Olası:** işaretler var, ama akış tam gezilmedi ya da yorum payı var.
 
-Son kontrol: her bulguyu şirketin savunacağı en güçlü cevapla sına. Yanlış bir suçlama kaçırılan bir bulgudan pahalıdır, çünkü rapor ürün ekibine gider ve tek hatalı madde raporun tamamına güveni düşürür. Şüphede güveni düşür, ciddiyeti şişirme, ama kanıtı güçlü bir bulguyu da yumuşatma.
+Son kontrol: her bulguyu şirketin savunacağı en güçlü cevapla sına. Yanlış bir suçlama kaçırılan bir bulgudan pahalıdır, çünkü rapor ürün ekibine gider ve tek hatalı madde raporun tamamına güveni düşürür. Şüphede güveni düşür, ciddiyeti şişirme, ama kanıtı güçlü bir bulguyu da yumuşatma. Metin iki türlü okunabiliyorsa ("tek seferde ödenir": taksitsiz mi, bir kerelik mi?) iki okumayı da yaz; kullanıcının yanlış anlayabilmesi bulgudur, kasıt anlamına gelmez.
 
 ### 5. Rapor
 
@@ -124,7 +127,7 @@ Fiyat ve kampanyaları tarihle yaz, çünkü değişir. Rapor iç bilgi içerir:
 ## "Bu tarama neyi göremez" için sabit metin
 
 Raporun sonuna ekle, çünkü temiz bir rapor kolayca "sorun yok" diye okunur:
-- Tek seferlik tarama, günler içinde tekrar eden rahatsız etmeyi ölçemez.
+- Tek seferlik tarama, günler içinde tekrar eden rahatsız etmeyi ölçemez. Daha önce kapatılmış popup'lar da görünmeyebilir.
 - Kıtlık, sayaç ve fiyat çıpalarının doğruluğu çoğu zaman dışarıdan bilinemez.
 - Giriş arkası akışlar (özellikle iptal) görülmediyse sonuç eksiktir.
 - Bu bir triyajdır: sınırdaki maddelere insan karar verir. Hafif kalıpları kullanıcılar da kaçırır; bu yüzden en savunmasız persona ile (vakti az, dijital okuryazarlığı düşük) ayrıca bakılmalı.
