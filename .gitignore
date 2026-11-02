@@ -1,0 +1,4 @@
+references/urunler/*
+!references/urunler/.gitkeep
+raporlar/
+.DS_Store

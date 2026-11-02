@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Örnekflix - Dizi ve film platformu</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;color:#222;background:#fff}
+section{padding:24px;border-bottom:1px solid #ddd}
+.btn{background:#d6001c;color:#fff;font-size:18px;padding:14px 32px;border:0;border-radius:6px}
+.ghost{background:none;border:0;color:#c9c9c9;font-size:11px;text-decoration:none}
+.note{font-size:11px;color:#b5b5b5}
+.plan{border:1px solid #ccc;padding:16px;margin:8px;display:inline-block;width:260px;vertical-align:top}
+.badge{background:#222;color:#fff;font-size:12px;padding:2px 8px}
+del{color:#777}
+details summary{cursor:pointer;color:#555}
+#cookie{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #222;padding:16px}
+#appModal{position:fixed;top:30%;left:30%;background:#fff;border:1px solid #222;padding:24px}
+</style>
+</head>
+<body>
+
+<div id="cookie">
+  <p>Deneyimini iyileştirmek için çerez kullanıyoruz.</p>
+  <button class="btn" id="cookieAccept">Tümünü kabul et</button>
+  <a class="ghost" href="#cookie-ayarlar">Tercihleri yönet</a>
+</div>
+
+<section id="cookie-ayarlar">
+  <h3>Çerez tercihleri (1/3)</h3>
+  <p>Reddetmek için önce iş ortaklarını görüntüle.</p>
+  <a href="#cookie-ortaklar">İş ortakları</a>
+  <h3 id="cookie-ortaklar">İş ortakları (2/3)</h3>
+  <p>214 iş ortağının her birini ayrı ayrı kapat, sonra devam et.</p>
+  <a href="#cookie-son">Devam</a>
+  <h3 id="cookie-son">Onayla (3/3)</h3>
+  <button>Seçimlerimi kaydet</button>
+</section>
+
+<div id="appModal" hidden>
+  <p>Örnekflix uygulamasını indir, daha iyi izle!</p>
+  <button class="btn">Uygulamayı indir</button>
+  <button id="appLater">Şimdi değil</button>
+</div>
+
+<section id="hero">
+  <h1>İlk 3 ay yalnızca 49 TL</h1>
+  <p>Binlerce dizi ve film. İstediğin zaman iptal et.</p>
+  <button class="btn">Hemen başla</button>
+  <p id="watching"></p>
+  <p>Kampanya bitmesine: <b id="timer">14:59</b></p>
+</section>
+
+<section id="paketler">
+  <h2>Paketler</h2>
+
+  <div class="plan">
+    <h3>Temel</h3>
+    <p><b>49 TL</b> / ay</p>
+    <details>
+      <summary>Detaylar</summary>
+      <p class="note">Kampanya 3 ay geçerlidir. 4. aydan itibaren aylık 249 TL ücret kartından otomatik tahsil edilir. 12 ay taahhüt içerir.</p>
+    </details>
+    <button class="btn">Seç</button>
+  </div>
+
+  <div class="plan">
+    <span class="badge">En çok tercih edilen</span>
+    <h3>Standart</h3>
+    <p><b>159 TL</b> / ay</p>
+    <p>Her ay yenilenir, istediğin ay kapatabilirsin.</p>
+    <button class="btn">Seç</button>
+  </div>
+
+  <div class="plan">
+    <h3>Standart yıllık</h3>
+    <p><del>1.908 TL</del> <b>1.590 TL</b> / yıl</p>
+    <p>12 x 159 TL yerine tek ödeme, %17 indirim. Yıl sonunda yenileme öncesi e-posta ile hatırlatılır.</p>
+    <button class="btn">Seç</button>
+  </div>
+
+  <div class="plan">
+    <h3>Premium</h3>
+    <p><b>62 TL</b> / hafta</p>
+    <p>4K, 5 ekran. Yalnızca haftalık faturalanır.</p>
+    <button class="btn">Seç</button>
+  </div>
+</section>
+
+<section id="canli-etkinlik">
+  <h2>Canlı konser yayını</h2>
+  <p>Salon kapasitesi 400 kişi. <b id="seats">Kalan koltuk: 12</b></p>
+</section>
+
+<section id="deneme">
+  <h2>7 gün ücretsiz dene</h2>
+  <p>Denemeyi başlatmak için rehberine erişim izni vermen gerekiyor. Arkadaşlarına davet mesajı senin adına gönderilir.</p>
+  <button class="btn">Rehbere izin ver ve başla</button>
+</section>
+
+<section id="odeme">
+  <h2>Ödeme adımı 1: sepetin</h2>
+  <p>Temel paket: 49 TL</p>
+  <label><input type="checkbox" checked> Cihaz Koruma Paketi (39 TL/ay)</label>
+  <p>Ara toplam: 88 TL</p>
+
+  <h3>İletişim izinleri</h3>
+  <label><input type="checkbox" checked> İş ortaklarının kampanya SMS'leri gönderebilmesini kabul ediyorum.</label><br>
+  <label><input type="checkbox"> Yeni dizilerden e-posta ile haberdar olmak istiyorum.</label><br>
+  <label><input type="checkbox" checked> Bülten aboneliğimi başlatmamayı istemediğimi onaylıyorum.</label>
+
+  <h2>Ödeme adımı 2: kart</h2>
+  <p>Kartını doğrulamak için bankanın 3D Secure ekranına yönlendirileceksin.</p>
+
+  <h2>Ödeme adımı 3: son onay</h2>
+  <p>Temel paket: 49 TL</p>
+  <p>Cihaz Koruma Paketi: 39 TL</p>
+  <p>Hizmet bedeli: 29 TL</p>
+  <p><b>Toplam: 117 TL</b></p>
+  <button class="btn">Siparişi tamamla</button>
+</section>
+
+<section id="bulten">
+  <h3>Yeni sezonlardan haberdar ol</h3>
+  <p>E-postanı bırak, ayda bir özet gönderelim.</p>
+  <button>Abone ol</button>
+  <button id="newsNo">Hayır, teşekkürler</button>
+</section>
+
+<section id="indirim">
+  <h3>%10 indirim kodun hazır</h3>
+  <button class="btn">Kodu al</button>
+  <a class="ghost" href="#">Hayır, paramı boşa harcamayı seviyorum</a>
+</section>
+
+<section id="profil">
+  <h3>Profil ayarları</h3>
+  <p>Takma ad: <input value="film_sever"></p>
+  <button title="Kaydet"><span aria-hidden="true">✓</span></button>
+  <p class="note">Bu ekranda değişiklikler onay simgesine basınca kaydedilir, ama simgenin açıklaması yok.</p>
+</section>
+
+<section id="sss">
+  <h2>Sıkça sorulan sorular</h2>
+  <h4>Nasıl abone olurum?</h4>
+  <p>Paketini seç, kartını gir. Web sitesinden birkaç tıkla tamamlanır.</p>
+  <h4>Nasıl iptal ederim?</h4>
+  <p>İptal işlemleri web sitesinden yapılamaz. Hafta içi 09:00-17:00 arasında 0850 000 00 00 numaralı hattı aramalı ya da mağazalarımıza dilekçeyle başvurmalısın.</p>
+</section>
+
+<section id="sozlesme">
+  <h2>Kullanıcı sözleşmesi</h2>
+  <p class="note">Madde 14. Temel paket 12 aylık taahhütlüdür. Süre dolmadan iptal hâlinde kalan ayların kampanya indirimi toplu olarak cayma bedeli şeklinde tahsil edilir.</p>
+</section>
+
+<script>
+var w = Math.floor(Math.random()*4000)+1000;
+document.getElementById('watching').textContent = 'Şu an ' + w + ' kişi izliyor';
+
+var left = 15*60;
+setInterval(function(){
+  left = left > 0 ? left-1 : 15*60;
+  var m = Math.floor(left/60), s = left%60;
+  document.getElementById('timer').textContent = m + ':' + (s<10?'0':'') + s;
+}, 1000);
+
+function showApp(){ document.getElementById('appModal').hidden = false; }
+showApp();
+document.getElementById('appLater').onclick = function(){
+  document.getElementById('appModal').hidden = true;
+  setTimeout(showApp, 60000);
+};
+
+document.getElementById('newsNo').onclick = function(){
+  localStorage.setItem('newsDismissedUntil', Date.now()+90*24*3600*1000);
+  document.getElementById('bulten').hidden = true;
+};
+if (Number(localStorage.getItem('newsDismissedUntil')) > Date.now()) {
+  document.getElementById('bulten').hidden = true;
+}
+
+fetch('/api/events/konser/seats').then(function(r){return r.json()}).then(function(d){
+  document.getElementById('seats').textContent = 'Kalan koltuk: ' + d.remaining;
+}).catch(function(){});
+</script>
+</body>
+</html>
