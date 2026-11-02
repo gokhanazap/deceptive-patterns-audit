@@ -42,7 +42,7 @@ Her sayfa için:
 3. Metni `get_page_text` ile al. Görsel düzen önemliyse ekran görüntüsü ekle.
 4. Sözleşme, SSS ve yardım sayfalarını ayrıca oku. Kapalı cevaplar görünen metinde çıkmaz; `document.body.textContent` içinde çoğu zaman vardır. PDF ise indirmeden önce kullanıcıya sor.
 
-Betik ve metin okuma ekrandaki her şeyi yakalamaz. Ekran görüntüsünde görülen bir şey betikte yoksa ekran görüntüsüne güven. Tarayıcı profili kalıcıdır: bir popup daha önce kapatıldıysa görünmeyebilir, görmediğin popup "yok" demek değildir.
+Betik ve metin okuma ekrandaki her şeyi yakalamaz. Görsele gömülü yazıları (kampanya popup'larındaki koşullar gibi) ve özel bileşenle yapılmış düğmeleri göremez; bunlar için ekran görüntüsünü yakınlaştırarak oku. Ekran görüntüsünde görülen bir şey betikte yoksa ekran görüntüsüne güven. Tarayıcı profili kalıcıdır: bir popup daha önce kapatıldıysa görünmeyebilir, görmediğin popup "yok" demek değildir.
 
 Gördüklerini tek bir defterde biriktir, özetleyip geçme:
 
